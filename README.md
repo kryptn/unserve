@@ -1,4 +1,4 @@
-# Unserve
+# Unserve [![Build Status](https://travis-ci.org/kryptn/unserve.svg?branch=master)](https://travis-ci.org/kryptn/unserve) [![Coverage Status](https://coveralls.io/repos/github/kryptn/unserve/badge.svg?branch=master)](https://coveralls.io/github/kryptn/unserve?branch=master)
 Run python serverless locally
 
 
