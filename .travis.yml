@@ -1,0 +1,19 @@
+language: python
+python:
+    - "3.5"
+    - "3.6"
+    - "3.7-dev"
+    - "nightly"
+
+install:
+    - pip install -e .
+    - pip install coveralls
+
+script:
+    - coverage run --source=unserve setup.py test
+
+after_success:
+    coveralls
+
+notifications:
+    email: false

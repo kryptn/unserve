@@ -12,7 +12,7 @@ Instructions
     
     sls create --template aws-python --path service
     touch service/__init__.py
-    python -m unserve service
+    unserve service
 
     curl http://localhost:5000/
 
