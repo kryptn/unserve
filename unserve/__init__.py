@@ -4,12 +4,20 @@ import yaml
 from sanic import Sanic
 from sanic.response import HTTPResponse
 
+def _import(module, fn_name):
+    # import the target handler
+    mod = __import__(module, fromlist=[fn_name])
+    return getattr(mod, fn_name)
 
 def get_functions(module_name, config_file='serverless.yml'):
     path = '{}/{}'.format(module_name, config_file)
     with open(path) as fd:
         config = yaml.load(fd)
     return config['functions']
+
+def hot_reload(fn):
+    # TODO this might be easy
+    return fn
 
 def build_function(fn):
     def handeled(*args, **kwargs):
@@ -34,6 +42,12 @@ def build_route(module_name, lambda_fn):
     path = '{}.{}'.format(module_name, handler_fn_name)
     module, fn_name = re.compile('^(.*)\.(.*)$').match(path).groups()
 
+    # try to import the function
+    fn = _import(module, fn_name)
+
+    # plug in hot reloading TODO stubbed tho
+    hot_fn = hot_reload(build_function(fn))
+
     # there's probably a better way to handle this
     route = '/'
     methods = ['GET']
@@ -44,24 +58,21 @@ def build_route(module_name, lambda_fn):
             if 'method' in lambda_fn[handler_name]['events']['http']:
                 methods = [lambda_fn[handler_name]['events']['http']['method'].upper()]
 
-    # try to import the function
-    mod = __import__(module, fromlist=[fn_name])
-    fn = getattr(mod, fn_name)
-
     # set up args, kwargs signature
-    return (build_function(fn), route), {'methods':methods}
+    return (hot_fn, route), {'methods':methods}
 
-def build_app():
-    pass
-
-def build_handler(module_name):
-    functions = get_functions(module_name)
-
+def build_app(module_name, functions):
     app = Sanic()
-
     for key, value in functions.items():
         args, kwargs = build_route(module_name, {key: value})
         app.add_route(*args, **kwargs)
+    
+    return app
 
-    app.run(host='0.0.0.0', port=5000)
+def build_handler(module_name, host, port):
+    functions = get_functions(module_name)
+
+    app = build_app(module_name, functions)
+
+    return lambda: app.run(host=host, port=port)
 
