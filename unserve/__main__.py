@@ -1,6 +1,6 @@
 import click
 
-from unserver import build_handler
+from unserve import build_handler
 
 @click.command()
 @click.argument('module')

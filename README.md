@@ -2,10 +2,9 @@
 Run python serverless locally
 
 
+Instructions
 
-Untested instructions
-
-    pip install -git+https://github.com/kryptn/unserve.git 
+    pip install git+https://github.com/kryptn/unserve.git 
     npm install -g serverless
     
     sls create --template aws-python --path service

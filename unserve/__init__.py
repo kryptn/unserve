@@ -17,6 +17,8 @@ def build_function(fn):
         # FIXME to the aws lambda event object
         # TODO context needs to be mocked here
         # signature for aws lambda handers is fn(event, context)
+        if len(args) < 2:
+            args = tuple([*args, None])
         response = fn(*args, **kwargs)
         return HTTPResponse(response['body'], response['statusCode'], 
                             content_type="application/json")
